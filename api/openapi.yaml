@@ -1,0 +1,248 @@
+openapi: 3.0.1
+info:
+  title: 应用存储  API 文档
+  version: v1
+servers:
+- url: https://your.apiserver.com
+security:
+- Bearer: []
+tags:
+- description: 应用存储
+  name: File
+paths:
+  /File/{appKey}:
+    delete:
+      operationId: FileDelete
+      parameters:
+      - description: 文件路径
+        explode: true
+        in: query
+        name: path
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: path
+        name: appKey
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JObjectApiResult"
+          description: OK
+      summary: 删除文件
+      tags:
+      - File
+      x-accepts:
+      - application/json
+    get:
+      operationId: Files
+      parameters:
+      - description: ""
+        explode: true
+        in: query
+        name: path
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: ""
+        explode: true
+        in: query
+        name: skip
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+        style: form
+      - description: ""
+        explode: true
+        in: query
+        name: take
+        required: false
+        schema:
+          default: 100
+          format: int32
+          type: integer
+        style: form
+      - explode: false
+        in: path
+        name: appKey
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JObjectApiResult"
+          description: OK
+      summary: 文件列表
+      tags:
+      - File
+      x-accepts:
+      - application/json
+  /File/{appKey}/Upload:
+    post:
+      operationId: FileUpload
+      parameters:
+      - description: 文件夹路径
+        explode: true
+        in: query
+        name: path
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: path
+        name: appKey
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          multipart/form-data:
+            encoding:
+              file:
+                style: form
+            schema:
+              $ref: "#/components/schemas/FileUpload_request"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JObjectApiResult"
+          description: OK
+      summary: 上传文件
+      tags:
+      - File
+      x-content-type: multipart/form-data
+      x-accepts:
+      - application/json
+  /File/{appKey}/CreateFolder:
+    post:
+      operationId: FileCreateFolder
+      parameters:
+      - description: ""
+        explode: true
+        in: query
+        name: path
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: path
+        name: appKey
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JObjectApiResult"
+          description: OK
+      summary: 创建文件夹
+      tags:
+      - File
+      x-accepts:
+      - application/json
+  /File/{appKey}/Rename:
+    post:
+      operationId: FileRename
+      parameters:
+      - description: ""
+        explode: true
+        in: query
+        name: sourceName
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: ""
+        explode: true
+        in: query
+        name: destName
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: path
+        name: appKey
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JObjectApiResult"
+          description: OK
+      summary: 重命名文件
+      tags:
+      - File
+      x-accepts:
+      - application/json
+components:
+  schemas:
+    JObjectApiResult:
+      additionalProperties: false
+      example:
+        code: 0
+        err: ""
+        data:
+          key:
+          - ""
+          - ""
+      properties:
+        code:
+          default: 200
+          description: 业务状态码
+          format: int32
+          type: integer
+        err:
+          default: ""
+          description: 错误消息
+          nullable: true
+          type: string
+        data:
+          additionalProperties:
+            $ref: "#/components/schemas/JToken"
+          description: 业务数据
+          nullable: true
+          type: object
+      type: object
+    JToken:
+      items: {}
+      type: array
+    FileUpload_request:
+      properties:
+        file:
+          description: 上传的文件
+          format: binary
+          type: string
+      type: object
+  securitySchemes:
+    Bearer:
+      description: "JWT授权，示例：“Authorization: Bearer {token}”"
+      scheme: Bearer
+      type: http
+
